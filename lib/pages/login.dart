@@ -1,6 +1,5 @@
 import 'package:coursedog_app/components/common/logo.dart';
 import 'package:coursedog_app/notifiers/user.dart';
-import 'package:coursedog_app/utils/api.dart';
 import 'package:coursedog_app/utils/constants.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +45,7 @@ class _LoginPageState extends State<LoginPage> {
     LoadingState loginState = Provider.of<UserNotifier>(context).loginState;
     bool isLoggingIn = loginState == LoadingState.loading;
     bool isLoaded = loginState == LoadingState.loaded;
+    bool isError = loginState == LoadingState.error;
     List<String> schools = Provider.of<UserNotifier>(context).schools;
 
     return Scaffold(
@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        error: isLoaded && schools.isEmpty
+                        error: (isLoaded && schools.isEmpty) || isError
                             ? Text('Please enter a valid email',
                                 style: TextStyle(
                                     color: Theme.of(context).colorScheme.error))
@@ -83,10 +83,14 @@ class _LoginPageState extends State<LoginPage> {
                               Theme.of(context).colorScheme.onPrimary),
                       onPressed: _email.isEmpty || isLoggingIn
                           ? null
-                          : () {
-                              Provider.of<UserNotifier>(context, listen: false)
+                          : () async {
+                              List<String> schools = await Provider.of<
+                                      UserNotifier>(context, listen: false)
                                   .fetchSchoolsForEmail(emailController.text);
-                              Get.toNamed('/magic-link');
+
+                              if (schools.isNotEmpty) {
+                                Get.toNamed('/magic-link');
+                              }
                             },
                       child: isLoggingIn
                           ? const CircularProgressIndicator()

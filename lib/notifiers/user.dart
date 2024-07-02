@@ -13,26 +13,32 @@ class UserNotifier extends ChangeNotifier {
   String get email => _email;
   String? get selectedSchool => _selectedSchool;
 
-  void fetchSchoolsForEmail(String email) async {
+  Future<List<String>> fetchSchoolsForEmail(String email) async {
     _email = email;
     _loginState = LoadingState.loading;
     notifyListeners();
-    final response = await login(email);
-    _schools = response.schools;
-    _loginState = LoadingState.loaded;
+    try {
+      final response = await login(email);
+      _schools = response.schools;
+      _loginState = LoadingState.loaded;
 
-    if (_schools.length == 1) {
-      _selectedSchool = _schools.first;
+      if (_schools.length == 1) {
+        _selectedSchool = _schools.first;
+      }
+    } catch (e) {
+      _loginState = LoadingState.error;
     }
     notifyListeners();
+    return _schools;
   }
 
-  void resendMagicLink() async {
+  Future<List<String>> resendMagicLink() async {
     _loginState = LoadingState.loading;
     notifyListeners();
     final response = await login(_email);
     _schools = response.schools;
     _loginState = LoadingState.loaded;
     notifyListeners();
+    return _schools;
   }
 }
