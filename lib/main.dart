@@ -1,5 +1,6 @@
 import 'package:coursedog_app/pages/login.dart';
 import 'package:coursedog_app/pages/magic_link.dart';
+import 'package:coursedog_app/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -38,6 +39,7 @@ class Coursedog extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/login': (BuildContext context) => const LoginPage(),
         '/magic-link': (BuildContext context) => const MagicLink(),
+        '/sections': (BuildContext context) => const Home(),
       },
     );
   }

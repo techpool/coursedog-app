@@ -2,6 +2,7 @@ import 'package:coursedog_app/components/common/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:open_mail_app/open_mail_app.dart';
 
 class MagicLink extends StatelessWidget {
@@ -97,7 +98,7 @@ class MagicLink extends StatelessWidget {
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary),
                     onPressed: () {
-                      Navigator.pop(context);
+                      Get.toNamed('/sections');
                     },
                     child: const Text('Submit')),
               ],
