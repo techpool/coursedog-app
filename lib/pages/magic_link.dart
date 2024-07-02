@@ -1,15 +1,21 @@
 import 'package:coursedog_app/components/common/top_bar.dart';
+import 'package:coursedog_app/notifiers/user.dart';
+import 'package:coursedog_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:open_mail_app/open_mail_app.dart';
+import 'package:provider/provider.dart';
 
 class MagicLink extends StatelessWidget {
   const MagicLink({super.key});
 
   @override
   Widget build(BuildContext context) {
+    LoadingState loginState = Provider.of<UserNotifier>(context).loginState;
+    bool isLoggingIn = loginState == LoadingState.loading;
+
     return Scaffold(
         appBar: const PreferredSize(
             preferredSize: Size.fromHeight(56.0),
@@ -87,9 +93,12 @@ class MagicLink extends StatelessWidget {
               children: [
                 TextButton.icon(
                   label: const Text('Resend Code'),
-                  icon: const Icon(Icons.refresh),
+                  icon: isLoggingIn
+                      ? const CircularProgressIndicator()
+                      : const Icon(Icons.refresh),
                   onPressed: () {
-                    Navigator.pop(context);
+                    Provider.of<UserNotifier>(context, listen: false)
+                        .resendMagicLink();
                   },
                 ),
                 ElevatedButton(
