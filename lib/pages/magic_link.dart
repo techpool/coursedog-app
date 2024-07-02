@@ -98,7 +98,7 @@ class MagicLink extends StatelessWidget {
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary),
                     onPressed: () {
-                      Get.toNamed('/sections');
+                      Get.toNamed('/home');
                     },
                     child: const Text('Submit')),
               ],
