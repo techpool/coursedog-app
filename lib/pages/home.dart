@@ -2,8 +2,11 @@ import 'package:coursedog_app/components/common/top_bar.dart';
 import 'package:coursedog_app/components/home/courses.dart';
 import 'package:coursedog_app/components/home/events.dart';
 import 'package:coursedog_app/components/home/timeline.dart';
+import 'package:coursedog_app/notifiers/term.dart';
+import 'package:coursedog_app/notifiers/user.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -22,6 +25,17 @@ class _HomeState extends State<Home> {
     });
 
     _currentIndex = index;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userNotifier = Provider.of<UserNotifier>(context, listen: false);
+      final termNotifier = Provider.of<TermNotifier>(context, listen: false);
+      termNotifier.fetchCurrentTerm(userNotifier.selectedSchool!);
+      termNotifier.fetchTerms(userNotifier.selectedSchool!);
+    });
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:coursedog_app/models/user.dart';
+import 'package:coursedog_app/notifiers/term.dart';
 import 'package:coursedog_app/notifiers/user.dart';
 import 'package:coursedog_app/pages/login.dart';
 import 'package:coursedog_app/pages/magic_link.dart';
@@ -27,6 +28,7 @@ class Coursedog extends StatelessWidget {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => UserNotifier(user)),
+          ChangeNotifierProvider(create: (context) => TermNotifier()),
         ],
         child: GetMaterialApp(
           title: 'Coursedog',
