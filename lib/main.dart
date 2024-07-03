@@ -1,7 +1,9 @@
+import 'package:coursedog_app/models/user.dart';
 import 'package:coursedog_app/notifiers/user.dart';
 import 'package:coursedog_app/pages/login.dart';
 import 'package:coursedog_app/pages/magic_link.dart';
 import 'package:coursedog_app/pages/home.dart';
+import 'package:coursedog_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -9,18 +11,22 @@ import 'package:provider/provider.dart';
 
 void main() async {
   await GetStorage.init();
-  runApp(const Coursedog());
+  User? user = GetStorage().read(userKey) != null
+      ? User.fromJson(GetStorage().read(userKey))
+      : null;
+  runApp(Coursedog(user: user));
 }
 
 class Coursedog extends StatelessWidget {
-  const Coursedog({super.key});
+  final User? user;
+  const Coursedog({super.key, this.user});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => UserNotifier()),
+          ChangeNotifierProvider(create: (context) => UserNotifier(user)),
         ],
         child: GetMaterialApp(
           title: 'Coursedog',
@@ -44,7 +50,7 @@ class Coursedog extends StatelessWidget {
                 ColorScheme.fromSeed(seedColor: const Color(0xFF4e80ff)),
             useMaterial3: true,
           ),
-          home: const LoginPage(),
+          home: user != null ? const Home() : const LoginPage(),
           routes: <String, WidgetBuilder>{
             '/login': (BuildContext context) => const LoginPage(),
             '/magic-link': (BuildContext context) => const MagicLink(),

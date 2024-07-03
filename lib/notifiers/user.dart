@@ -2,6 +2,8 @@ import 'package:coursedog_app/models/user.dart';
 import 'package:coursedog_app/utils/api.dart' as api;
 import 'package:coursedog_app/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 class UserNotifier extends ChangeNotifier {
   List<String> _schools = <String>[];
@@ -18,6 +20,22 @@ class UserNotifier extends ChangeNotifier {
   String? get selectedSchool => _selectedSchool;
   User? get user => _user;
 
+  UserNotifier(User? user) {
+    _user = user;
+    _schools = user?.schools ?? <String>[];
+    _email = user?.email ?? '';
+    _selectedSchool = user?.schools.first;
+
+    if (user != null) {
+      verifyMagicCode(user.magicCode).then((isLoggedIn) {
+        if (!isLoggedIn) {
+          Get.offAllNamed('/login');
+        }
+        notifyListeners();
+      });
+    }
+  }
+
   Future<List<String>> fetchSchoolsForEmail(String email) async {
     _email = email;
     _loginState = LoadingState.loading;
@@ -27,9 +45,7 @@ class UserNotifier extends ChangeNotifier {
       _schools = response.schools;
       _loginState = LoadingState.loaded;
 
-      if (_schools.length == 1) {
-        _selectedSchool = _schools.first;
-      }
+      _selectedSchool = _schools.first;
     } catch (e) {
       _loginState = LoadingState.error;
     }
@@ -53,6 +69,7 @@ class UserNotifier extends ChangeNotifier {
       notifyListeners();
       _user = await api.verifyMagicCode(_email, code);
       _magicCodeState = LoadingState.loaded;
+      GetStorage().write(userKey, _user!.toJson());
     } catch (e) {
       _magicCodeState = LoadingState.error;
     }

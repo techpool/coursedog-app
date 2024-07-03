@@ -1,4 +1,3 @@
-const String userSchoolsKey = 'userSchools';
-const String currentSelectedSchoolKey = 'currentSelectedSchool';
+const String userKey = 'user';
 
 enum LoadingState { init, loading, loaded, error }

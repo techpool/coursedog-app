@@ -21,4 +21,14 @@ class User {
       lastName: json['lastName'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'schools': schools,
+      'email': email,
+      'magicCode': magicCode,
+      'firstName': firstName,
+      'lastName': lastName,
+    };
+  }
 }
