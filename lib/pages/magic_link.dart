@@ -8,8 +8,21 @@ import 'package:get/get.dart';
 import 'package:open_mail_app/open_mail_app.dart';
 import 'package:provider/provider.dart';
 
-class MagicLink extends StatelessWidget {
+class MagicLink extends StatefulWidget {
   const MagicLink({super.key});
+
+  @override
+  State<MagicLink> createState() => _MagicLinkState();
+}
+
+class _MagicLinkState extends State<MagicLink> {
+  String verificationCode = '';
+
+  void onCodeChanged(String code) {
+    setState(() {
+      verificationCode = code;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,21 +48,13 @@ class MagicLink extends StatelessWidget {
                   borderColor: Theme.of(context).primaryColor,
                   //set to true to show as box or false to show as dash
                   showFieldAsBox: false,
-                  //runs when a code is typed in
-                  onCodeChanged: (String code) {
-                    //handle validation or checks here
-                  },
                   alignment: Alignment.centerLeft,
                   //runs when every textfield is filled
                   onSubmit: (String verificationCode) {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Text("Verification Code"),
-                            content: Text('Code entered is $verificationCode'),
-                          );
-                        });
+                    // Check if mounted
+                    if (!context.mounted) return;
+
+                    onCodeChanged(verificationCode);
                   }, // end onSubmit
                 ),
                 const Gap(20.0),
@@ -106,9 +111,37 @@ class MagicLink extends StatelessWidget {
                         backgroundColor: Theme.of(context).primaryColor,
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary),
-                    onPressed: () {
-                      Get.toNamed('/home');
-                    },
+                    onPressed: verificationCode.length != 6
+                        ? null
+                        : () async {
+                            bool verificationStatus =
+                                await Provider.of<UserNotifier>(context,
+                                        listen: false)
+                                    .verifyMagicCode(verificationCode);
+
+                            if (verificationStatus) {
+                              Get.offAllNamed('/home');
+                            } else {
+                              if (!context.mounted) return;
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Text('Error'),
+                                      content: const Text(
+                                          'Failed to verify magic code'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Ok'),
+                                        )
+                                      ],
+                                    );
+                                  });
+                            }
+                          },
                     child: const Text('Submit')),
               ],
             )
