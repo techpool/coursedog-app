@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:coursedog_app/models/course.dart';
 import 'package:coursedog_app/models/response/current_planning_term_response.dart';
 import 'package:coursedog_app/models/response/login_response.dart';
 import 'package:coursedog_app/models/term.dart';
@@ -87,5 +88,31 @@ Future<List<Term>?> fetchTerms(String school) async {
     return terms.map((term) => Term.fromJson(term)).toList();
   } else {
     throw Exception('Failed to fetch terms');
+  }
+}
+
+Future<List<Course>> fetchCourses(
+    {required String school, required Term term, String? searchQuery}) async {
+  User? user = GetStorage().read(userKey) != null
+      ? User.fromJson(GetStorage().read(userKey))
+      : null;
+
+  if (user == null) {
+    Get.offAllNamed('/login');
+    return [];
+  }
+
+  final response = await http.post(
+      Uri.parse(
+          '$apiUrl/api/v1/$school/courses-search/${term.year}/${term.semester}?searchQuery=$searchQuery%24filters&includeRelatedData=true'),
+      body: jsonEncode(<String, String>{'condition': 'and', 'filters': '[]'}),
+      headers: {'MobileCode': user.magicCode});
+
+  if (response.statusCode == 200) {
+    final List<dynamic> courses =
+        jsonDecode(response.body)['courses'].values.toList() ?? [];
+    return courses.map((course) => Course.fromJson(course)).toList();
+  } else {
+    throw Exception('Failed to fetch courses');
   }
 }
