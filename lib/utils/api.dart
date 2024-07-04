@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:coursedog_app/models/course.dart';
+import 'package:coursedog_app/models/favourite_course.dart';
+import 'package:coursedog_app/models/favourite_events.dart';
 import 'package:coursedog_app/models/response/current_planning_term_response.dart';
 import 'package:coursedog_app/models/response/login_response.dart';
 import 'package:coursedog_app/models/term.dart';
@@ -115,4 +117,155 @@ Future<List<Course>> fetchCourses(
   } else {
     throw Exception('Failed to fetch courses');
   }
+}
+
+Future<List<FavouriteCourse>> fetchFavouriteCourses(String school) async {
+  User? user = GetStorage().read(userKey) != null
+      ? User.fromJson(GetStorage().read(userKey))
+      : null;
+
+  if (user == null) {
+    Get.offAllNamed('/login');
+    return [];
+  }
+
+  final response = await http.get(
+      Uri.parse('$apiUrl/api/v1/$school/sm/students/favourites?type=course'),
+      headers: {'MobileCode': user.magicCode});
+
+  if (response.statusCode == 200) {
+    final List<dynamic> favouriteCourses = jsonDecode(response.body) ?? [];
+    return favouriteCourses
+        .map((favouriteCourse) => FavouriteCourse.fromJson(favouriteCourse))
+        .toList();
+  } else {
+    throw Exception('Failed to fetch favourite courses');
+  }
+}
+
+Future<List<FavouriteEvent>> fetchFavouriteEvents(String school) async {
+  User? user = GetStorage().read(userKey) != null
+      ? User.fromJson(GetStorage().read(userKey))
+      : null;
+
+  if (user == null) {
+    Get.offAllNamed('/login');
+    return [];
+  }
+
+  final response = await http.get(
+      Uri.parse('$apiUrl/api/v1/$school/sm/students/favourites?type=event'),
+      headers: {'MobileCode': user.magicCode});
+
+  if (response.statusCode == 200) {
+    final List<dynamic> favouriteEvents = jsonDecode(response.body) ?? [];
+    return favouriteEvents
+        .map((favouriteEvent) => FavouriteEvent.fromJson(favouriteEvent))
+        .toList();
+  } else {
+    throw Exception('Failed to fetch favourite events');
+  }
+}
+
+Future<FavouriteCourse?> addCourseFavourite(String school,
+    {required String courseId,
+    required String sectionId,
+    required String termId}) async {
+  User? user = GetStorage().read(userKey) != null
+      ? User.fromJson(GetStorage().read(userKey))
+      : null;
+
+  if (user == null) {
+    Get.offAllNamed('/login');
+    return null;
+  }
+
+  var response = await http.post(
+    Uri.parse('$apiUrl/api/v1/$school/sm/students/favourites'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'MobileCode': user.magicCode
+    },
+    body: jsonEncode(<String, dynamic>{
+      'type': 'course',
+      'entityInfo': {
+        'courseId': courseId,
+        'sectionId': sectionId,
+        'termId': termId
+      }
+    }),
+  );
+
+  if (response.statusCode == 201) {
+    return FavouriteCourse.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception('Failed to add course favourite');
+  }
+}
+
+Future<void> removeCourseFavourite(String school, String favouriteId) async {
+  User? user = GetStorage().read(userKey) != null
+      ? User.fromJson(GetStorage().read(userKey))
+      : null;
+
+  if (user == null) {
+    Get.offAllNamed('/login');
+    return;
+  }
+
+  await http.delete(
+    Uri.parse('$apiUrl/api/v1/$school/sm/students/favourites/$favouriteId'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'MobileCode': user.magicCode
+    },
+  );
+}
+
+Future<FavouriteEvent?> addEventFavourite(String school, String eventId) async {
+  User? user = GetStorage().read(userKey) != null
+      ? User.fromJson(GetStorage().read(userKey))
+      : null;
+
+  if (user == null) {
+    Get.offAllNamed('/login');
+    return null;
+  }
+
+  var response = await http.post(
+    Uri.parse('$apiUrl/api/v1/$school/sm/students/favourites'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'MobileCode': user.magicCode
+    },
+    body: jsonEncode(<String, dynamic>{
+      'type': 'event',
+      'entityInfo': {'eventId': eventId}
+    }),
+  );
+
+  if (response.statusCode == 201) {
+    return FavouriteEvent.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception('Failed to add event favourite');
+  }
+}
+
+Future<void> removeEventFavourite(String school, String favouriteId) async {
+  User? user = GetStorage().read(userKey) != null
+      ? User.fromJson(GetStorage().read(userKey))
+      : null;
+
+  if (user == null) {
+    Get.offAllNamed('/login');
+    return;
+  }
+
+  await http.delete(
+    Uri.parse('$apiUrl/api/v1/$school/sm/students/favourites/$favouriteId'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'MobileCode': user.magicCode
+    },
+  );
 }

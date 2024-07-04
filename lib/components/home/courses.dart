@@ -1,5 +1,7 @@
 import 'package:coursedog_app/components/common/course_card.dart';
+import 'package:coursedog_app/notifiers/favourites.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Courses extends StatelessWidget {
   const Courses({super.key});
@@ -9,11 +11,10 @@ class Courses extends StatelessWidget {
     return SafeArea(
         minimum: const EdgeInsets.all(16.0),
         child: ListView(
-          children: const [
-            CourseCard(),
-            CourseCard(),
-            CourseCard(),
-          ],
+          children: Provider.of<FavouritesNotifier>(context)
+              .courseFavourites
+              .map((course) => const CourseCard())
+              .toList(),
         ));
   }
 }

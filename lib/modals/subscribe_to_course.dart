@@ -1,11 +1,13 @@
 import 'package:coursedog_app/components/common/bottomsheet_topbar.dart';
 import 'package:coursedog_app/models/course.dart';
 import 'package:coursedog_app/models/section.dart';
+import 'package:coursedog_app/notifiers/favourites.dart';
 import 'package:coursedog_app/notifiers/term.dart';
 import 'package:coursedog_app/notifiers/user.dart';
 import 'package:coursedog_app/utils/api.dart' as api;
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
@@ -76,8 +78,30 @@ class _SubscribeToCourseState extends State<SubscribeToCourse> {
                 }
               },
             )),
-      const SizedBox(
-        height: 500,
+      Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ButtonBar(
+          children: [
+            TextButton(
+              onPressed: () {
+                Get.back();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (selectedSection != null) {
+                  Provider.of<FavouritesNotifier>(context, listen: false)
+                      .addCourseFavourite(
+                          courseId: selectedCourse!.id,
+                          sectionId: selectedSection!.id);
+                  Get.back();
+                }
+              },
+              child: const Text('Subscribe'),
+            ),
+          ],
+        ),
       )
     ]);
   }
