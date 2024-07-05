@@ -1,5 +1,6 @@
 import 'package:coursedog_app/models/favourite_course.dart';
 import 'package:coursedog_app/models/favourite_events.dart';
+import 'package:coursedog_app/notifiers/course.dart';
 import 'package:coursedog_app/notifiers/term.dart';
 import 'package:coursedog_app/notifiers/user.dart';
 import 'package:coursedog_app/utils/api.dart' as api;
@@ -30,6 +31,8 @@ class FavouritesNotifier extends ChangeNotifier {
     if (favouriteCourse == null) return;
 
     _courseFavourites.add(favouriteCourse);
+    Provider.of<CourseNotifier>(Get.context!, listen: false)
+        .fetchFavouriteCourses(_courseFavourites);
     notifyListeners();
   }
 
@@ -43,14 +46,14 @@ class FavouritesNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getCourseFavourites() async {
+  Future<void> getCourseFavourites() async {
     _courseFavourites = await api.fetchFavouriteCourses(
       Provider.of<UserNotifier>(Get.context!, listen: false).selectedSchool!,
     );
     notifyListeners();
   }
 
-  void getEventFavourites() async {
+  Future<void> getEventFavourites() async {
     _eventFavourites = await api.fetchFavouriteEvents(
       Provider.of<UserNotifier>(Get.context!, listen: false).selectedSchool!,
     );

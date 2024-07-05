@@ -2,6 +2,8 @@ import 'package:coursedog_app/components/common/top_bar.dart';
 import 'package:coursedog_app/components/home/courses.dart';
 import 'package:coursedog_app/components/home/events.dart';
 import 'package:coursedog_app/components/home/timeline.dart';
+import 'package:coursedog_app/modals/subscribe_to_course.dart';
+import 'package:coursedog_app/notifiers/course.dart';
 import 'package:coursedog_app/notifiers/favourites.dart';
 import 'package:coursedog_app/notifiers/term.dart';
 import 'package:coursedog_app/notifiers/user.dart';
@@ -31,15 +33,22 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final userNotifier = Provider.of<UserNotifier>(context, listen: false);
       final termNotifier = Provider.of<TermNotifier>(context, listen: false);
       final favouritesNotifier =
           Provider.of<FavouritesNotifier>(context, listen: false);
-      termNotifier.fetchCurrentTerm(userNotifier.selectedSchool!);
-      termNotifier.fetchTerms(userNotifier.selectedSchool!);
-      favouritesNotifier.getEventFavourites();
-      favouritesNotifier.getCourseFavourites();
+      final courseNotifier =
+          Provider.of<CourseNotifier>(context, listen: false);
+
+      await Future.wait([
+        termNotifier.fetchCurrentTerm(userNotifier.selectedSchool!),
+        termNotifier.fetchTerms(userNotifier.selectedSchool!),
+        favouritesNotifier.getEventFavourites(),
+        favouritesNotifier.getCourseFavourites(),
+      ]);
+
+      courseNotifier.fetchFavouriteCourses(favouritesNotifier.courseFavourites);
     });
   }
 
@@ -54,7 +63,13 @@ class _HomeState extends State<Home> {
     return Scaffold(
       floatingActionButton: _currentIndex == 1 || _currentIndex == 2
           ? FloatingActionButton(
-              onPressed: () {},
+              onPressed: () {
+                if (_currentIndex == 1) {
+                  openSubscribeToCourse(context);
+                } else {
+                  // Open add event modal
+                }
+              },
               child: const Icon(Icons.add),
             )
           : null,

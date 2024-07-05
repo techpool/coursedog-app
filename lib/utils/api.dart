@@ -94,7 +94,10 @@ Future<List<Term>?> fetchTerms(String school) async {
 }
 
 Future<List<Course>> fetchCourses(
-    {required String school, required Term term, String? searchQuery}) async {
+    {required String school,
+    required Term term,
+    String? searchQuery = '',
+    List<String> listOfCourseIds = const []}) async {
   User? user = GetStorage().read(userKey) != null
       ? User.fromJson(GetStorage().read(userKey))
       : null;
@@ -104,11 +107,28 @@ Future<List<Course>> fetchCourses(
     return [];
   }
 
+  List<Map<String, String>> filters = listOfCourseIds
+      .map((courseId) => {
+            "id": "code-course",
+            "name": "_id",
+            "inputType": "text",
+            "group": "course",
+            "type": "is",
+            "value": courseId
+          })
+      .toList();
+
+  String encodedBody = jsonEncode(
+      <String, dynamic>{'condition': 'or', 'filters': filters.toList()});
+
   final response = await http.post(
       Uri.parse(
           '$apiUrl/api/v1/$school/courses-search/${term.year}/${term.semester}?searchQuery=$searchQuery%24filters&includeRelatedData=true'),
-      body: jsonEncode(<String, String>{'condition': 'and', 'filters': '[]'}),
-      headers: {'MobileCode': user.magicCode});
+      body: encodedBody,
+      headers: {
+        'MobileCode': user.magicCode,
+        'Content-Type': 'application/json; charset=UTF-8'
+      });
 
   if (response.statusCode == 200) {
     final List<dynamic> courses =

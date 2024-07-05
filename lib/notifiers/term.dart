@@ -15,7 +15,7 @@ class TermNotifier extends ChangeNotifier {
   Term? get selectedTerm =>
       _terms.firstWhereOrNull((term) => term.id == _selectedTermId);
 
-  fetchTerms(String school) async {
+  Future<void> fetchTerms(String school) async {
     _termLoadingState = LoadingState.loading;
     notifyListeners();
     final response = await api.fetchTerms(school);
@@ -24,7 +24,7 @@ class TermNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  fetchCurrentTerm(String school) async {
+  Future<void> fetchCurrentTerm(String school) async {
     _termLoadingState = LoadingState.loading;
     notifyListeners();
     try {
