@@ -36,4 +36,10 @@ class TermNotifier extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void selectTerm(String termId) {
+    _selectedTermId = termId;
+    notifyListeners();
+    Get.back();
+  }
 }

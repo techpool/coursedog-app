@@ -93,11 +93,13 @@ class Events extends StatelessWidget {
                 child: TabBarView(children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: ListView(
-                      children: subscribedEvents
-                          .map((event) => EventCard(event: event))
-                          .toList(),
-                    ),
+                    child: subscribedEvents.isEmpty
+                        ? const Center(child: Text('No subscribed events'))
+                        : ListView(
+                            children: subscribedEvents
+                                .map((event) => EventCard(event: event))
+                                .toList(),
+                          ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),

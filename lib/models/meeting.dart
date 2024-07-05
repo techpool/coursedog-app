@@ -10,6 +10,7 @@ class Meeting {
   DateTime? endDate;
   int? startTime;
   int? endTime;
+  String? roomId;
 
   Meeting(
       {required this.id,
@@ -22,7 +23,8 @@ class Meeting {
       this.startDate,
       this.endDate,
       this.startTime,
-      this.endTime});
+      this.endTime,
+      this.roomId});
 
   factory Meeting.fromJson(Map<String, dynamic> json) {
     return Meeting(
@@ -38,6 +40,7 @@ class Meeting {
       endDate: json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
       startTime: json['startTime'],
       endTime: json['endTime'],
+      roomId: json['roomId'],
     );
   }
 

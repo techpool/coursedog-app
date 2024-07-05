@@ -1,5 +1,4 @@
 import 'package:coursedog_app/components/common/date_section.dart';
-import 'package:coursedog_app/components/common/term_selector.dart';
 import 'package:coursedog_app/modals/subscribe_to_course.dart';
 import 'package:coursedog_app/models/meeting.dart';
 import 'package:coursedog_app/notifiers/favourites.dart';
@@ -22,7 +21,6 @@ class Timeline extends StatelessWidget {
     return SafeArea(
         minimum: const EdgeInsets.all(16.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const TermSelector(),
           hasNoFutureMeetings
               ? Expanded(
                   child: Center(

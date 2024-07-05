@@ -68,7 +68,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: _currentIndex == 1 || _currentIndex == 2
+      floatingActionButton: _currentIndex == 1
           ? FloatingActionButton(
               onPressed: () {
                 if (_currentIndex == 1) {
@@ -83,6 +83,7 @@ class _HomeState extends State<Home> {
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(56.0),
           child: TopBar(
+            showTermSelector: _currentIndex == 0,
             title: ['Timeline', 'Courses', 'Events'][_currentIndex],
             hideBackButton: true,
           )),
