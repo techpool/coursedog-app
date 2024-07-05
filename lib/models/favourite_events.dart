@@ -7,7 +7,7 @@ class FavouriteEvent {
   factory FavouriteEvent.fromJson(Map<String, dynamic> json) {
     return FavouriteEvent(
       id: json['_id'],
-      eventId: json['eventId'],
+      eventId: json['entityInfo']['eventId'],
     );
   }
 

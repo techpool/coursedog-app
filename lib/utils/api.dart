@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:coursedog_app/models/course.dart';
+import 'package:coursedog_app/models/event.dart';
 import 'package:coursedog_app/models/favourite_course.dart';
 import 'package:coursedog_app/models/favourite_events.dart';
+import 'package:coursedog_app/models/meeting.dart';
 import 'package:coursedog_app/models/response/current_planning_term_response.dart';
 import 'package:coursedog_app/models/response/login_response.dart';
 import 'package:coursedog_app/models/term.dart';
@@ -288,4 +290,66 @@ Future<void> removeEventFavourite(String school, String favouriteId) async {
       'MobileCode': user.magicCode
     },
   );
+}
+
+Future<List<Event>?> fetchFutureEvents(String school) async {
+  User? user = GetStorage().read(userKey) != null
+      ? User.fromJson(GetStorage().read(userKey))
+      : null;
+
+  if (user == null) {
+    Get.offAllNamed('/login');
+    return null;
+  }
+
+  String today = DateTime.now().toIso8601String().substring(0, 10);
+  final response = await http.get(
+      Uri.parse(
+          '$apiUrl/api/v1/em/$school/meetings?startDate=$today&includeAcademicMeetings=false&groupByEventAndDate=true'),
+      headers: {'MobileCode': user.magicCode});
+
+  if (response.statusCode == 200) {
+    final List<dynamic> listOfEvents =
+        jsonDecode(response.body).values.toList() ?? [];
+    final List<Event> futureEvents = listOfEvents.map((meeting) {
+      return Event.fromJson({
+        ...meeting['eventData'],
+        'startDate': meeting['startDate'],
+        'endDate': meeting['endDate'],
+        'startTime': meeting['startTime'],
+        'endTime': meeting['endTime']
+      });
+    }).toList();
+    return futureEvents;
+  } else {
+    throw Exception('Failed to fetch future events');
+  }
+}
+
+Future<List<Meeting>?> fetchFutureMeetings(String school) async {
+  User? user = GetStorage().read(userKey) != null
+      ? User.fromJson(GetStorage().read(userKey))
+      : null;
+
+  if (user == null) {
+    Get.offAllNamed('/login');
+    return null;
+  }
+
+  String today = DateTime.now().toIso8601String().substring(0, 10);
+  final response = await http.get(
+      Uri.parse(
+          '$apiUrl/api/v1/em/$school/meetings?startDate=$today&includeAcademicMeetings=true'),
+      headers: {'MobileCode': user.magicCode});
+
+  if (response.statusCode == 200) {
+    final List<dynamic> listOfMeetings =
+        jsonDecode(response.body).values.toList() ?? [];
+    final List<Meeting> futureMeetings = listOfMeetings.map((meeting) {
+      return Meeting.fromJson(meeting);
+    }).toList();
+    return futureMeetings;
+  } else {
+    throw Exception('Failed to fetch future meetings');
+  }
 }

@@ -4,7 +4,9 @@ import 'package:coursedog_app/components/home/events.dart';
 import 'package:coursedog_app/components/home/timeline.dart';
 import 'package:coursedog_app/modals/subscribe_to_course.dart';
 import 'package:coursedog_app/notifiers/course.dart';
+import 'package:coursedog_app/notifiers/event.dart';
 import 'package:coursedog_app/notifiers/favourites.dart';
+import 'package:coursedog_app/notifiers/meeting.dart';
 import 'package:coursedog_app/notifiers/term.dart';
 import 'package:coursedog_app/notifiers/user.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -40,12 +42,17 @@ class _HomeState extends State<Home> {
           Provider.of<FavouritesNotifier>(context, listen: false);
       final courseNotifier =
           Provider.of<CourseNotifier>(context, listen: false);
+      final eventNotifier = Provider.of<EventNotifier>(context, listen: false);
+      final meetingNotifier =
+          Provider.of<MeetingNotifier>(context, listen: false);
 
       await Future.wait([
         termNotifier.fetchCurrentTerm(userNotifier.selectedSchool!),
         termNotifier.fetchTerms(userNotifier.selectedSchool!),
         favouritesNotifier.getEventFavourites(),
         favouritesNotifier.getCourseFavourites(),
+        eventNotifier.fetchUpcomingEvents(),
+        meetingNotifier.fetchUpcomingMeetings(),
       ]);
 
       courseNotifier.fetchFavouriteCourses(favouritesNotifier.courseFavourites);

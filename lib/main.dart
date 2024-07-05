@@ -1,6 +1,8 @@
 import 'package:coursedog_app/models/user.dart';
 import 'package:coursedog_app/notifiers/course.dart';
+import 'package:coursedog_app/notifiers/event.dart';
 import 'package:coursedog_app/notifiers/favourites.dart';
+import 'package:coursedog_app/notifiers/meeting.dart';
 import 'package:coursedog_app/notifiers/term.dart';
 import 'package:coursedog_app/notifiers/user.dart';
 import 'package:coursedog_app/pages/login.dart';
@@ -32,7 +34,9 @@ class Coursedog extends StatelessWidget {
           ChangeNotifierProvider(create: (context) => UserNotifier(user)),
           ChangeNotifierProvider(create: (context) => TermNotifier()),
           ChangeNotifierProvider(create: (context) => FavouritesNotifier()),
-          ChangeNotifierProvider(create: (context) => CourseNotifier())
+          ChangeNotifierProvider(create: (context) => CourseNotifier()),
+          ChangeNotifierProvider(create: (context) => EventNotifier()),
+          ChangeNotifierProvider(create: (context) => MeetingNotifier()),
         ],
         child: GetMaterialApp(
           title: 'Coursedog',

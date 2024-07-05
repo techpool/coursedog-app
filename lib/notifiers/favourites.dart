@@ -15,6 +15,10 @@ class FavouritesNotifier extends ChangeNotifier {
   List<FavouriteEvent> get eventFavourites => _eventFavourites;
   List<FavouriteCourse> get courseFavourites => _courseFavourites;
 
+  bool isEventFavourite(String id) {
+    return _eventFavourites.any((element) => element.eventId == id);
+  }
+
   void addCourseFavourite({
     required String courseId,
     required String sectionId,
@@ -36,6 +40,18 @@ class FavouritesNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addEventFavourite(String id) async {
+    FavouriteEvent? favouriteEvent = await api.addEventFavourite(
+      Provider.of<UserNotifier>(Get.context!, listen: false).selectedSchool!,
+      id,
+    );
+
+    if (favouriteEvent == null) return;
+
+    _eventFavourites.add(favouriteEvent);
+    notifyListeners();
+  }
+
   void removeFavourite(String id) async {
     await api.removeCourseFavourite(
       Provider.of<UserNotifier>(Get.context!, listen: false).selectedSchool!,
@@ -43,6 +59,7 @@ class FavouritesNotifier extends ChangeNotifier {
     );
 
     _courseFavourites.removeWhere((element) => element.id == id);
+    _eventFavourites.removeWhere((element) => element.id == id);
     notifyListeners();
   }
 

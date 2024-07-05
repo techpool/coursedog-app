@@ -1,15 +1,24 @@
+import 'package:coursedog_app/components/common/date_section.dart';
 import 'package:coursedog_app/components/common/term_selector.dart';
 import 'package:coursedog_app/modals/subscribe_to_course.dart';
+import 'package:coursedog_app/models/meeting.dart';
+import 'package:coursedog_app/notifiers/favourites.dart';
+import 'package:coursedog_app/notifiers/meeting.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-
-bool get hasNoFutureMeetings => true;
+import 'package:provider/provider.dart';
 
 class Timeline extends StatelessWidget {
   const Timeline({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Map<DateTime, List<Meeting>> groupedMeetings =
+        Provider.of<MeetingNotifier>(context)
+            .meetingsGroupedByStartDateAndFiltered(
+                Provider.of<FavouritesNotifier>(context).eventFavourites,
+                Provider.of<FavouritesNotifier>(context).courseFavourites);
+    bool hasNoFutureMeetings = groupedMeetings.isEmpty;
     return SafeArea(
         minimum: const EdgeInsets.all(16.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -44,9 +53,14 @@ class Timeline extends StatelessWidget {
                     )
                   ],
                 )))
-              : ListView(
-                  children: const [],
-                )
+              : Expanded(
+                  child: ListView.builder(
+                      itemCount: groupedMeetings.keys.length,
+                      itemBuilder: (context, index) {
+                        final date = groupedMeetings.keys.elementAt(index);
+                        final meetings = groupedMeetings[date] ?? [];
+                        return DateSection(date: date, meetings: meetings);
+                      }))
         ]));
   }
 }
