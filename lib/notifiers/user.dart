@@ -76,4 +76,10 @@ class UserNotifier extends ChangeNotifier {
     notifyListeners();
     return _magicCodeState == LoadingState.loaded;
   }
+
+  void logout() {
+    _user = null;
+    GetStorage().remove(userKey);
+    Get.offAllNamed('/login');
+  }
 }

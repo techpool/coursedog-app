@@ -1,6 +1,7 @@
 import 'package:coursedog_app/models/event.dart';
 import 'package:coursedog_app/notifiers/favourites.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class EventCard extends StatelessWidget {
@@ -15,6 +16,9 @@ class EventCard extends StatelessWidget {
           ListTile(
             title: Text(event.name),
             subtitle: Text(event.description ?? ''),
+            onTap: () => {
+              Get.toNamed('/event', arguments: event.id),
+            },
           ),
           ButtonBar(
             children: [

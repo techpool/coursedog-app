@@ -5,6 +5,7 @@ import 'package:coursedog_app/notifiers/favourites.dart';
 import 'package:coursedog_app/notifiers/meeting.dart';
 import 'package:coursedog_app/notifiers/term.dart';
 import 'package:coursedog_app/notifiers/user.dart';
+import 'package:coursedog_app/pages/event.dart';
 import 'package:coursedog_app/pages/login.dart';
 import 'package:coursedog_app/pages/magic_link.dart';
 import 'package:coursedog_app/pages/home.dart';
@@ -65,6 +66,7 @@ class Coursedog extends StatelessWidget {
             '/login': (BuildContext context) => const LoginPage(),
             '/magic-link': (BuildContext context) => const MagicLink(),
             '/home': (BuildContext context) => const Home(),
+            '/event': (BuildContext context) => const EventPage(),
           },
         ));
   }
